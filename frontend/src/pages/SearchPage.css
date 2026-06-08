@@ -1,0 +1,107 @@
+.search-page {
+  background: radial-gradient(circle at center, #0a0518 0%, var(--bg-void) 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+.search-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: var(--sp-4) var(--sp-6);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: var(--z-overlay);
+}
+
+.search-logo {
+  font-size: var(--text-2xl);
+  font-family: var(--font-secondary);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.header-actions {
+  display: flex;
+  gap: var(--sp-3);
+}
+
+.btn-header {
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--radius-md);
+  color: var(--white);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.btn-header:hover {
+  background: var(--purple-700);
+  border-color: var(--purple-400);
+  box-shadow: var(--shadow-glow-purple);
+}
+
+.search-content {
+  justify-content: center;
+}
+
+.search-box {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-6);
+  text-align: center;
+}
+
+.search-instructions {
+  font-size: var(--text-base);
+  color: var(--gray-300);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  animation: textFadeIn 0.8s ease-out;
+}
+
+.search-error-msg {
+  font-size: var(--text-sm);
+  color: var(--rose-400);
+  animation: shakeError 0.4s ease-in-out;
+}
+
+.search-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--sp-4) var(--sp-6);
+  display: flex;
+  justify-content: center;
+  z-index: var(--z-overlay);
+}
+
+.admin-link-btn {
+  font-size: var(--text-xs);
+  color: var(--gray-500);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color var(--transition-fast);
+}
+
+.admin-link-btn:hover {
+  color: var(--cyan-400);
+}
+
+/* Animations */
+@keyframes textFadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shakeError {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}

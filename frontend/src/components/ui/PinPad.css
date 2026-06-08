@@ -1,0 +1,138 @@
+.pinpad-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-8);
+  width: 100%;
+  max-width: 320px;
+}
+
+/* ─── Dots ─────────────────────────────────────────────────────────────────── */
+.pinpad-dots {
+  display: flex;
+  gap: var(--sp-4);
+  justify-content: center;
+}
+
+.pinpad-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--gray-600);
+  background: transparent;
+  transition: all 0.2s var(--transition-spring);
+  position: relative;
+}
+
+.pinpad-dot.filled {
+  background: var(--purple-500);
+  border-color: var(--purple-400);
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.7);
+  transform: scale(1.15);
+}
+
+.pinpad-dot.dot-success {
+  background: #22c55e;
+  border-color: #4ade80;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.7);
+}
+
+.pinpad-dot.dot-error {
+  background: var(--rose-500);
+  border-color: var(--rose-400);
+  box-shadow: 0 0 12px rgba(244, 63, 94, 0.7);
+}
+
+/* ─── Grid ──────────────────────────────────────────────────────────────────── */
+.pinpad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+  width: 100%;
+}
+
+/* ─── Key ───────────────────────────────────────────────────────────────────── */
+.pinpad-key {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-primary);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  color: var(--white);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.pinpad-key::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(124,58,237,0.3) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.pinpad-key:hover:not(:disabled)::before,
+.pinpad-key:active:not(:disabled)::before {
+  opacity: 1;
+}
+
+.pinpad-key:hover:not(:disabled) {
+  border-color: var(--purple-500);
+  transform: scale(1.05);
+  box-shadow: 0 0 16px rgba(124, 58, 237, 0.4);
+}
+
+.pinpad-key:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.pinpad-key:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.pinpad-key--empty {
+  background: transparent;
+  border: none;
+  cursor: default;
+  pointer-events: none;
+}
+
+.pinpad-key--back {
+  font-size: var(--text-xl);
+  color: var(--gray-300);
+}
+
+.pinpad-key--back:hover:not(:disabled) {
+  border-color: var(--rose-500);
+  color: var(--rose-400);
+  box-shadow: 0 0 16px rgba(244, 63, 94, 0.3);
+}
+
+/* ─── Spinner ───────────────────────────────────────────────────────────────── */
+.pinpad-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-top-color: var(--purple-400);
+  border-radius: var(--radius-full);
+  animation: spin 0.7s linear infinite;
+}
+
+/* ─── Mobile ────────────────────────────────────────────────────────────────── */
+@media (max-width: 380px) {
+  .pinpad-grid { gap: var(--sp-2); }
+  .pinpad-key { font-size: var(--text-xl); }
+  .pinpad-wrapper { max-width: 280px; }
+}

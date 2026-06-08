@@ -1,0 +1,158 @@
+/* ─── EchOes Keyframe Animations ───────────────────────────────────────────── */
+
+/* Fade */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Slide */
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-60px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(60px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* Pulse / Glow */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.3), 0 0 40px rgba(124, 58, 237, 0.1); }
+  50%       { box-shadow: 0 0 40px rgba(124, 58, 237, 0.6), 0 0 80px rgba(124, 58, 237, 0.3); }
+}
+
+@keyframes pulseGlowCyan {
+  0%, 100% { box-shadow: 0 0 20px rgba(6, 182, 212, 0.3); }
+  50%       { box-shadow: 0 0 40px rgba(6, 182, 212, 0.6), 0 0 80px rgba(6, 182, 212, 0.2); }
+}
+
+@keyframes glowText {
+  0%, 100% { text-shadow: 0 0 20px rgba(124, 58, 237, 0.6); }
+  50%       { text-shadow: 0 0 40px rgba(124, 58, 237, 0.9), 0 0 80px rgba(6, 182, 212, 0.4); }
+}
+
+/* Float */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-12px); }
+}
+
+@keyframes floatRotate {
+  0%   { transform: translateY(0) rotate(0deg); }
+  50%  { transform: translateY(-8px) rotate(5deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+
+/* Spin */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Shake (wrong PIN) */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 50%, 90% { transform: translateX(-8px); }
+  30%, 70% { transform: translateX(8px); }
+}
+
+/* Scale bounce */
+@keyframes scaleBounce {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.12); }
+  60%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+/* Typewriter cursor */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Ripple */
+@keyframes ripple {
+  from { transform: scale(0); opacity: 0.8; }
+  to   { transform: scale(4); opacity: 0; }
+}
+
+/* Portal swirl */
+@keyframes portalSpin {
+  from { transform: rotate(0deg) scale(0.5); opacity: 0; }
+  to   { transform: rotate(720deg) scale(1); opacity: 1; }
+}
+
+/* Gradient shift */
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Number reveal */
+@keyframes numberReveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
+}
+
+/* Particle orbit */
+@keyframes orbit {
+  from { transform: rotate(0deg) translateX(var(--orbit-r, 80px)) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(var(--orbit-r, 80px)) rotate(-360deg); }
+}
+
+/* ─── Animation Utility Classes ────────────────────────────────────────────── */
+
+.anim-fade-in        { animation: fadeIn 0.5s ease both; }
+.anim-fade-in-up     { animation: fadeInUp 0.6s ease both; }
+.anim-fade-in-down   { animation: fadeInDown 0.6s ease both; }
+.anim-fade-in-scale  { animation: fadeInScale 0.5s var(--transition-spring) both; }
+.anim-slide-in-left  { animation: slideInLeft 0.5s ease both; }
+.anim-slide-in-right { animation: slideInRight 0.5s ease both; }
+.anim-float          { animation: float 3s ease-in-out infinite; }
+.anim-float-rotate   { animation: floatRotate 4s ease-in-out infinite; }
+.anim-pulse-glow     { animation: pulseGlow 2.5s ease-in-out infinite; }
+.anim-pulse-cyan     { animation: pulseGlowCyan 2.5s ease-in-out infinite; }
+.anim-glow-text      { animation: glowText 2.5s ease-in-out infinite; }
+.anim-spin           { animation: spin 1s linear infinite; }
+.anim-spin-slow      { animation: spinSlow 8s linear infinite; }
+.anim-shake          { animation: shake 0.4s ease both; }
+.anim-gradient       { animation: gradientShift 4s ease infinite; background-size: 200% 200%; }
+
+/* Delay utilities */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+.delay-800 { animation-delay: 0.8s; }
+.delay-1000 { animation-delay: 1s; }
+.delay-1200 { animation-delay: 1.2s; }

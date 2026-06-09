@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({ override: true });
 
 const express = require("express");
 const cors = require("cors");
@@ -12,6 +12,7 @@ const { configureCloudinary } = require("./src/config/cloudinary");
 const authRoutes = require("./src/routes/authRoutes");
 const memoryRoutes = require("./src/routes/memoryRoutes");
 const mediaRoutes = require("./src/routes/mediaRoutes");
+const recoveryRoutes = require("./src/routes/recoveryRoutes");
 
 // ─── App Init ────────────────────────────────────────────────────────────────
 const app = express();
@@ -49,6 +50,7 @@ app.get("/api/v1/health", (req, res) => {
 
 // ─── API Routes ───────────────────────────────────────────────────────────────
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/recovery", recoveryRoutes);
 app.use("/api/v1/memories", memoryRoutes);
 app.use("/api/v1/media", mediaRoutes);
 

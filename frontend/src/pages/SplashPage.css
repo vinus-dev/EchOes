@@ -70,3 +70,49 @@
 @keyframes fadeIn {
   to { opacity: 1; }
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .splash-content {
+    padding: var(--sp-8) var(--sp-4);
+  }
+
+  .brand-title {
+    font-size: clamp(2.5rem, 8vw, 3.5rem);
+    text-shadow: 0 0 20px rgba(124, 58, 237, 0.2);
+  }
+
+  .brand-tagline {
+    font-size: clamp(var(--text-sm), 3vw, var(--text-base));
+  }
+
+  .btn-skip {
+    padding: var(--sp-2) var(--sp-4);
+    font-size: var(--text-2xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .splash-content {
+    padding: var(--sp-6) var(--sp-3);
+  }
+
+  .brand-container {
+    gap: var(--sp-2);
+  }
+
+  .brand-title {
+    font-size: clamp(1.8rem, 7vw, 2.5rem);
+    text-shadow: 0 0 15px rgba(124, 58, 237, 0.15);
+  }
+
+  .brand-tagline {
+    font-size: clamp(var(--text-xs), 2.5vw, var(--text-sm));
+  }
+
+  .btn-skip {
+    padding: var(--sp-1) var(--sp-3);
+    font-size: var(--text-3xs);
+    letter-spacing: 0.1em;
+  }
+}

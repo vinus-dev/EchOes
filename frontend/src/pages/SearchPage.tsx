@@ -18,13 +18,24 @@ export default function SearchPage() {
     clearMemory();
     
     if (!isPinUnlocked) {
-      navigate("/pin");
+      navigate("/");
     }
   }, [isPinUnlocked, navigate, clearMemory]);
 
   const handleLock = () => {
-    lockPin();
-    navigate("/pin");
+    navigate("/", { replace: true });
+    setTimeout(() => {
+      lockPin();
+    }, 0);
+  };
+
+  const handleSearch = (query: string) => {
+    if (query.trim().toUpperCase() === "ADMIN") {
+      navigate("/echoes-admin");
+      return;
+    }
+
+    searchMemory(query);
   };
 
   return (
@@ -55,16 +66,10 @@ export default function SearchPage() {
           <p className="search-instructions">
             Enter a secret number or code name to retrieve its memory.
           </p>
-          <SearchBar onSearch={searchMemory} isLoading={isSearching} />
+          <SearchBar onSearch={handleSearch} isLoading={isSearching} />
           {searchError && <p className="search-error-msg">{searchError}</p>}
         </div>
       </div>
-
-      <footer className="search-footer">
-        <button className="admin-link-btn" onClick={() => navigate("/echoes-admin")}>
-          Admin Area
-        </button>
-      </footer>
     </div>
   );
 }

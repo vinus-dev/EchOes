@@ -13,9 +13,14 @@
   padding: var(--sp-4) var(--sp-6);
   z-index: var(--z-overlay);
   pointer-events: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--sp-4);
 }
 
-.btn-back {
+.btn-back,
+.btn-toggle-details {
   pointer-events: auto;
   padding: var(--sp-2) var(--sp-4);
   border-radius: var(--radius-md);
@@ -25,14 +30,27 @@
   transition: all var(--transition-fast);
 }
 
-.btn-back:hover {
+.btn-back:hover,
+.btn-toggle-details:hover {
   background: var(--purple-700);
   border-color: var(--purple-400);
   box-shadow: var(--shadow-glow-purple);
 }
 
+@media (max-width: 768px) {
+  .memory-header {
+    padding: var(--sp-3) var(--sp-4);
+  }
+  
+  .btn-back,
+  .btn-toggle-details {
+    padding: var(--sp-2) var(--sp-3);
+    font-size: var(--text-xs);
+  }
+}
+
 .memory-container {
-  max-width: 960px;
+  max-width: 1200px;
   width: 100%;
   margin: 80px auto auto auto;
   padding: var(--sp-6);
@@ -43,17 +61,38 @@
   animation: memoryFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+@media (max-width: 768px) {
+  .memory-container {
+    margin-top: 70px;
+    padding: var(--sp-4);
+    gap: var(--sp-4);
+  }
+}
+
 .memory-details-section {
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
   text-align: center;
+  padding: var(--sp-6);
+  background: rgba(124, 58, 237, 0.08);
+  border: 1px solid rgba(124, 58, 237, 0.15);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 768px) {
+  .memory-details-section {
+    padding: var(--sp-4);
+    margin-bottom: var(--sp-4);
+  }
 }
 
 .memory-meta {
   display: flex;
   justify-content: center;
   gap: var(--sp-2);
+  flex-wrap: wrap;
 }
 
 .meta-badge {
@@ -67,7 +106,7 @@
 }
 
 .memory-title {
-  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-size: clamp(1.75rem, 4vw, 3rem);
   font-family: var(--font-secondary);
   font-weight: 800;
   line-height: 1.1;
@@ -76,9 +115,15 @@
 .memory-description {
   font-size: var(--text-base);
   color: var(--gray-300);
-  max-width: 650px;
+  max-width: 100%;
   margin: 0 auto;
   line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .memory-description {
+    font-size: var(--text-sm);
+  }
 }
 
 .memory-tags {
@@ -97,7 +142,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+  width: 100%; justify-content: center; gap: var(--sp-4);
 }
 
 .video-player-container {

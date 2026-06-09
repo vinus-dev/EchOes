@@ -13,7 +13,7 @@ function UserRouteGuard({ children }: { children: React.ReactNode }) {
   const { isPinUnlocked } = useAuth();
   
   if (!isPinUnlocked) {
-    return <Navigate to="/pin" replace />;
+    return <Navigate to="/" replace />;
   }
   return <>{children}</>;
 }

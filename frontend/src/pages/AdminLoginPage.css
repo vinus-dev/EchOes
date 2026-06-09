@@ -112,3 +112,80 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .admin-login-card {
+    max-width: 100%;
+    padding: var(--sp-5) var(--sp-4);
+    margin: 0 var(--sp-4);
+  }
+
+  .admin-login-title {
+    font-size: clamp(var(--text-lg), 5vw, var(--text-xl));
+  }
+
+  .admin-login-subtitle {
+    font-size: clamp(var(--text-2xs), 3vw, var(--text-xs));
+  }
+
+  .form-field input {
+    padding: var(--sp-2) var(--sp-3);
+    font-size: var(--text-sm);
+  }
+
+  .btn-login {
+    padding: var(--sp-2) var(--sp-4);
+    font-size: var(--text-sm);
+  }
+
+  .admin-login-actions {
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-top: var(--sp-1);
+  }
+
+  .btn-back-home {
+    font-size: var(--text-2xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-login-card {
+    padding: var(--sp-4) var(--sp-3);
+    margin: 0 var(--sp-2);
+    gap: var(--sp-3);
+  }
+
+  .admin-login-title {
+    font-size: var(--text-lg);
+  }
+
+  .admin-login-subtitle {
+    font-size: var(--text-2xs);
+  }
+
+  .admin-login-form {
+    gap: var(--sp-3);
+  }
+
+  .form-field input {
+    padding: var(--sp-2) var(--sp-2);
+  }
+
+  .btn-login {
+    width: 100%;
+    padding: var(--sp-2) var(--sp-2);
+    font-size: var(--text-xs);
+  }
+
+  .admin-login-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-back-home {
+    order: -1;
+    text-align: center;
+  }
+}

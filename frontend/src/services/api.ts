@@ -57,6 +57,20 @@ export const authApi = {
   },
 };
 
+// ─── Recovery API (PIN Recovery with Security Q&A) ────────────────────────────
+
+export const recoveryApi = {
+  verifyQA: async (answer: string): Promise<ApiResponse<{ recoveryToken: string }>> => {
+    const res = await api.post("/recovery/verify-qa", { answer });
+    return res.data;
+  },
+
+  verifyPassword: async (password: string, recoveryToken: string): Promise<ApiResponse<{ resetToken: string }>> => {
+    const res = await api.post("/recovery/verify-password", { password, recoveryToken });
+    return res.data;
+  },
+};
+
 // ─── Memory API ───────────────────────────────────────────────────────────────
 
 export const memoryApi = {

@@ -10,7 +10,19 @@ const uploadFiles = (req, res) => {
   uploadMedia(req, res, async (err) => {
     if (err) {
       console.error("Upload error:", err);
-      return res.status(400).json({ success: false, message: err.message });
+      const errMsg = err.message || "Upload failed.";
+      const isCloudinaryAuthError =
+        /Unknown API key|Invalid Signature|api key|cloudinary/i.test(errMsg);
+
+      if (isCloudinaryAuthError) {
+        return res.status(502).json({
+          success: false,
+          message:
+            "Cloudinary authentication failed. Verify CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET in backend/.env, then restart the backend.",
+        });
+      }
+
+      return res.status(400).json({ success: false, message: errMsg });
     }
 
     if (!req.files || req.files.length === 0) {

@@ -272,14 +272,158 @@
 }
 
 @media (max-width: 768px) {
+  .dashboard-header {
+    padding: var(--sp-3) var(--sp-4);
+    flex-wrap: wrap;
+  }
+
+  .dashboard-logo {
+    font-size: var(--text-lg);
+  }
+
+  .dashboard-header-right {
+    gap: var(--sp-2);
+  }
+
+  .dashboard-main-content {
+    padding: var(--sp-4) var(--sp-3);
+    gap: var(--sp-4);
+  }
+
+  /* Stats grid */
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--sp-3);
+  }
+
+  .stat-card {
+    padding: var(--sp-4) var(--sp-3);
+    gap: var(--sp-2);
+  }
+
+  .stat-icon {
+    font-size: var(--text-3xl);
+  }
+
+  .stat-number {
+    font-size: var(--text-2xl);
+  }
+
+  .stat-label {
+    font-size: var(--text-2xs);
+  }
+
+  /* Controls */
   .dashboard-controls-row {
     flex-direction: column;
     align-items: stretch;
+    gap: var(--sp-2);
   }
+
   .dashboard-filter-form {
-    flex-wrap: wrap;
-  }
-  .search-input {
+    max-width: 100%;
+    flex-direction: column;
     width: 100%;
+  }
+
+  .search-input,
+  .type-select,
+  .btn-search {
+    width: 100%;
+    padding: var(--sp-2) var(--sp-3);
+  }
+
+  .btn-create-memory {
+    width: 100%;
+    padding: var(--sp-2) var(--sp-3);
+  }
+
+  /* Memories grid */
+  .memories-grid {
+    grid-template-columns: 1fr;
+    gap: var(--sp-4);
+  }
+
+  /* Pagination */
+  .dashboard-pagination {
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+  }
+
+  .btn-pagination {
+    padding: var(--sp-2) var(--sp-3);
+    font-size: var(--text-xs);
+  }
+
+  /* Tools section */
+  .dashboard-tools-section {
+    padding: var(--sp-4) var(--sp-3);
+  }
+
+  .tools-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pin-input-group {
+    flex-direction: column;
+  }
+
+  .pin-input-group input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header {
+    padding: var(--sp-2) var(--sp-3);
+    flex-direction: column;
+  }
+
+  .dashboard-logo {
+    font-size: var(--text-base);
+    width: 100%;
+    text-align: center;
+  }
+
+  .dashboard-header-right {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .dashboard-main-content {
+    padding: var(--sp-3) var(--sp-2);
+    gap: var(--sp-3);
+  }
+
+  .dashboard-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: var(--sp-3) var(--sp-2);
+  }
+
+  .stat-number {
+    font-size: var(--text-xl);
+  }
+
+  .dashboard-filter-form {
+    gap: var(--sp-2);
+  }
+
+  .search-input,
+  .type-select,
+  .btn-search,
+  .btn-create-memory {
+    padding: var(--sp-2) var(--sp-2);
+    font-size: var(--text-xs);
+  }
+
+  .dashboard-tools-section {
+    padding: var(--sp-3) var(--sp-2);
+  }
+
+  .pin-reset-form {
+    max-width: 100%;
   }
 }

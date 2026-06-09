@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
+const { configureMongoDns } = require("./mongodbDns");
 
 const connectDB = async () => {
+  configureMongoDns();
+
   const maxRetries = 5;
   let retries = 0;
 

@@ -1,13 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PinScene from "../components/three/PinScene";
 import PinPad from "../components/ui/PinPad";
+import ForgotPinModal from "../components/ui/ForgotPinModal";
 import { useAuth } from "../hooks/useAuth";
 import "./PinPage.css";
 
 export default function PinPage() {
   const navigate = useNavigate();
-  const { verifyPin, isPinUnlocked, isVerifying } = useAuth();
+  const { verifyPin, isPinUnlocked, isVerifying, resetPin } = useAuth();
+  const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
 
   useEffect(() => {
     if (isPinUnlocked) {
@@ -24,6 +26,16 @@ export default function PinPage() {
     return false;
   };
 
+  const handleResetPin = async (newPin: string): Promise<boolean> => {
+    try {
+      const success = await resetPin(newPin);
+      return success;
+    } catch (error) {
+      console.error("Error resetting PIN:", error);
+      return false;
+    }
+  };
+
   return (
     <div className="full-page pin-page">
       <div className="canvas-container">
@@ -35,8 +47,21 @@ export default function PinPage() {
           <h2 className="pin-title">Unlock Memories</h2>
           <p className="pin-subtitle">Enter the access PIN to unlock memories</p>
           <PinPad onSubmit={handleSubmit} isLoading={isVerifying} length={4} />
+          
+          <button 
+            className="btn-forgot-pin glass"
+            onClick={() => setIsForgotModalOpen(true)}
+          >
+            Forgot PIN?
+          </button>
         </div>
       </div>
+
+      <ForgotPinModal
+        isOpen={isForgotModalOpen}
+        onClose={() => setIsForgotModalOpen(false)}
+        onReset={handleResetPin}
+      />
     </div>
   );
 }

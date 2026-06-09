@@ -1,12 +1,16 @@
+require("dotenv").config({ override: true });
+
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
-require("dotenv").config();
 
 const Admin = require("./src/models/Admin");
 const AppConfig = require("./src/models/AppConfig");
+const { configureMongoDns } = require("./src/config/mongodbDns");
 
 const seed = async () => {
   try {
+    configureMongoDns();
+
     await mongoose.connect(process.env.MONGODB_URI);
     console.log("✅ Connected to MongoDB for seeding...");
 

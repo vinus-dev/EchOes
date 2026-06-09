@@ -83,11 +83,10 @@ const memorySchema = new mongoose.Schema(
 memorySchema.index({ name: "text", title: "text", tags: "text" });
 
 // Ensure at least one of code or name is provided
-memorySchema.pre("save", function (next) {
+memorySchema.pre("save", function () {
   if (!this.code && !this.name) {
-    return next(new Error("Memory must have either a code or a name"));
+    throw new Error("Memory must have either a code or a name");
   }
-  next();
 });
 
 module.exports = mongoose.model("Memory", memorySchema);

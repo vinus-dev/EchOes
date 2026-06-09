@@ -1,18 +1,9 @@
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SplashScene from "../components/three/SplashScene";
 import "./SplashPage.css";
 
 export default function SplashPage() {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigate("/pin");
-    }, 4500);
-
-    return () => clearTimeout(timer);
-  }, [navigate]);
 
   return (
     <div className="full-page splash-page">

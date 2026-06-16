@@ -231,23 +231,52 @@
   color: var(--gray-400);
 }
 
-.pin-input-group {
+.pin-reset-error {
+  color: var(--rose-400);
+  background: rgba(244, 63, 94, 0.1);
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  border-radius: var(--radius-md);
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--text-xs);
+  margin-bottom: var(--sp-2);
+}
+
+.pin-fields-grid {
   display: flex;
-  gap: var(--sp-2);
+  flex-direction: column;
+  gap: var(--sp-3);
   margin-top: var(--sp-2);
 }
 
-.pin-input-group input {
+.pin-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.pin-field-group label {
+  font-size: var(--text-xs);
+  color: var(--gray-400);
+  font-weight: 500;
+}
+
+.pin-field-group input {
   background: var(--bg-void);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
-  padding: var(--sp-2) var(--sp-4);
+  padding: var(--sp-2) var(--sp-3);
   color: var(--white);
   font-size: var(--text-sm);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.15em;
   font-family: var(--font-secondary);
-  width: 140px;
   text-align: center;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.pin-field-group input:focus {
+  border-color: var(--purple-500);
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
 }
 
 .btn-reset-pin {
@@ -255,10 +284,12 @@
   border: 1px solid var(--purple-500);
   color: var(--white);
   font-weight: 600;
-  padding: var(--sp-2) var(--sp-4);
+  padding: var(--sp-2-5) var(--sp-4);
   border-radius: var(--radius-md);
   font-size: var(--text-xs);
   transition: all var(--transition-fast);
+  cursor: pointer;
+  margin-top: var(--sp-2);
 }
 
 .btn-reset-pin:hover:not(:disabled) {

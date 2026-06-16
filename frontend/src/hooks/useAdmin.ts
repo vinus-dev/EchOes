@@ -9,6 +9,7 @@ export const useAdmin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [fileProgresses, setFileProgresses] = useState<Record<number, number>>({});
   const [isUploading, setIsUploading] = useState(false);
 
   const fetchMemories = useCallback(
@@ -43,19 +44,33 @@ export const useAdmin = () => {
   const uploadMedia = useCallback(async (files: File[]): Promise<MediaItem[]> => {
     setIsUploading(true);
     setUploadProgress(0);
+    setFileProgresses({});
+
     try {
-      const res = await mediaApi.upload(files, setUploadProgress);
+      const res = await mediaApi.upload(
+        files,
+        // Overall progress
+        (pct) => setUploadProgress(pct),
+        // Per-file progress
+        (index, pct) => setFileProgresses((prev) => ({ ...prev, [index]: pct }))
+      );
+
       if (res.success && res.data) {
         toast.success(`${res.data.length} file(s) uploaded! ✅`);
         return res.data;
       }
       return [];
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Upload failed");
+      const msg =
+        err.response?.data?.message ||
+        err.message ||
+        "Upload failed. Please check your connection and try again.";
+      toast.error(msg);
       return [];
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
+      setFileProgresses({});
     }
   }, []);
 
@@ -136,6 +151,7 @@ export const useAdmin = () => {
     pagination,
     isUploading,
     uploadProgress,
+    fileProgresses,
     fetchMemories,
     fetchStats,
     uploadMedia,

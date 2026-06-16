@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import MemoryCard from "../components/admin/MemoryCard";
 import UploadForm from "../components/admin/UploadForm";
@@ -17,6 +18,7 @@ export default function AdminDashboard() {
     pagination,
     isUploading,
     uploadProgress,
+    fileProgresses,
     fetchMemories,
     fetchStats,
     uploadMedia,
@@ -36,8 +38,11 @@ export default function AdminDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
 
   // PIN reset state
+  const [currentPin, setCurrentPin] = useState("");
   const [newPin, setNewPin] = useState("");
+  const [confirmNewPin, setConfirmNewPin] = useState("");
   const [isResettingPin, setIsResettingPin] = useState(false);
+  const [pinResetError, setPinResetError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isAdminLoggedIn) {
@@ -95,15 +100,34 @@ export default function AdminDashboard() {
 
   const handleResetPin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPin.trim() || newPin.length !== 4) {
-      alert("PIN must be exactly 4 digits.");
+    setPinResetError(null);
+
+    if (!currentPin.trim() || currentPin.length !== 4) {
+      setPinResetError("Current PIN must be 4 digits.");
       return;
     }
+    if (!newPin.trim() || newPin.length !== 4) {
+      setPinResetError("New PIN must be exactly 4 digits.");
+      return;
+    }
+    if (newPin !== confirmNewPin) {
+      setPinResetError("New PINs do not match.");
+      return;
+    }
+    if (newPin === currentPin) {
+      setPinResetError("New PIN must be different from the current PIN.");
+      return;
+    }
+
     setIsResettingPin(true);
-    const success = await resetPin(newPin.trim());
+    const success = await resetPin(newPin.trim(), currentPin.trim());
     setIsResettingPin(false);
+
     if (success) {
+      setCurrentPin("");
       setNewPin("");
+      setConfirmNewPin("");
+      setPinResetError(null);
     }
   };
 
@@ -248,22 +272,65 @@ export default function AdminDashboard() {
 
         {/* Configuration / Tools Section */}
         <section className="dashboard-tools-section glass">
-          <h2>Security & System Settings</h2>
+          <h2>🔒 Security &amp; System Settings</h2>
           <div className="tools-grid">
             <form onSubmit={handleResetPin} className="pin-reset-form">
-              <h3>App Unlock PIN</h3>
-              <p>Reset the numeric 4-digit code required to unlock memories.</p>
-              <div className="pin-input-group">
-                <input
-                  type="password"
-                  maxLength={4}
-                  placeholder="New 4-digit PIN"
-                  value={newPin}
-                  onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ""))}
-                  required
-                />
-                <button type="submit" className="btn-reset-pin" disabled={isResettingPin}>
-                  {isResettingPin ? "Updating..." : "Reset PIN"}
+              <h3>Change App Unlock PIN</h3>
+              <p>Requires the current PIN to authenticate before updating.</p>
+
+              {pinResetError && (
+                <div className="pin-reset-error">⚠ {pinResetError}</div>
+              )}
+
+              <div className="pin-fields-grid">
+                <div className="pin-field-group">
+                  <label>Current PIN</label>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    maxLength={4}
+                    placeholder="Current 4-digit PIN"
+                    value={currentPin}
+                    onChange={(e) => setCurrentPin(e.target.value.replace(/\D/g, ""))}
+                    required
+                    autoComplete="off"
+                  />
+                </div>
+
+                <div className="pin-field-group">
+                  <label>New PIN</label>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    maxLength={4}
+                    placeholder="New 4-digit PIN"
+                    value={newPin}
+                    onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ""))}
+                    required
+                    autoComplete="off"
+                  />
+                </div>
+
+                <div className="pin-field-group">
+                  <label>Confirm New PIN</label>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    maxLength={4}
+                    placeholder="Repeat new PIN"
+                    value={confirmNewPin}
+                    onChange={(e) => setConfirmNewPin(e.target.value.replace(/\D/g, ""))}
+                    required
+                    autoComplete="off"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="btn-reset-pin"
+                  disabled={isResettingPin || newPin.length < 4 || currentPin.length < 4}
+                >
+                  {isResettingPin ? "Updating..." : "Update PIN 🔑"}
                 </button>
               </div>
             </form>
@@ -280,6 +347,7 @@ export default function AdminDashboard() {
           uploadMedia={uploadMedia}
           isUploading={isUploading}
           uploadProgress={uploadProgress}
+          fileProgresses={fileProgresses}
           deleteMedia={deleteMedia}
         />
       )}

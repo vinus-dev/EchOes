@@ -53,19 +53,26 @@ export const useAuth = () => {
     [setAdminAuth]
   );
 
-  const resetPin = useCallback(async (newPin: string): Promise<boolean> => {
-    try {
-      const res = await authApi.resetPin(newPin);
-      if (res.success) {
-        toast.success("PIN reset successfully! 🔑");
-        return true;
+  /**
+   * Reset PIN from admin dashboard.
+   * Requires both the current PIN (for verification) and the new PIN.
+   */
+  const resetPin = useCallback(
+    async (newPin: string, currentPin: string): Promise<boolean> => {
+      try {
+        const res = await authApi.resetPin(newPin, currentPin);
+        if (res.success) {
+          toast.success("PIN updated successfully! 🔑");
+          return true;
+        }
+        return false;
+      } catch (err: any) {
+        toast.error(err.response?.data?.message || "Failed to update PIN");
+        return false;
       }
-      return false;
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to reset PIN");
-      return false;
-    }
-  }, []);
+    },
+    []
+  );
 
   return {
     isPinUnlocked,

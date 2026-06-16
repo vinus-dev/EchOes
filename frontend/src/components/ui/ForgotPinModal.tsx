@@ -6,202 +6,229 @@ import "./ForgotPinModal.css";
 interface ForgotPinModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onReset: (newPin: string) => Promise<boolean>;
 }
 
-export default function ForgotPinModal({ isOpen, onClose, onReset }: ForgotPinModalProps) {
-  const [step, setStep] = useState<"question" | "password" | "reset">("question");
-  const [answer, setAnswer] = useState("");
-  const [adminPassword, setAdminPassword] = useState("");
+export default function ForgotPinModal({ isOpen, onClose }: ForgotPinModalProps) {
+  const [step, setStep] = useState<"credentials" | "reset" | "success">("credentials");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [newPin, setNewPin] = useState("");
+  const [confirmPin, setConfirmPin] = useState("");
+  const [resetToken, setResetToken] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [recoveryToken, setRecoveryToken] = useState("");
-  const [resetToken, setResetToken] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleAnswerSubmit = async () => {
+  // ── Step 1: Verify admin credentials ───────────────────────────────────────
+  const handleCredentialsSubmit = async () => {
     setError("");
-    if (!answer.trim()) {
-      setError("Please enter an answer.");
+    if (!username.trim() || !password.trim()) {
+      setError("Please fill in both username and password.");
       return;
     }
-
     setIsLoading(true);
     try {
-      const res = await recoveryApi.verifyQA(answer);
-      if (res.success && res.recoveryToken) {
-        setRecoveryToken(res.recoveryToken);
-        setStep("password");
-        setAnswer("");
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Verification failed.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handlePasswordSubmit = async () => {
-    setError("");
-    if (!adminPassword.trim()) {
-      setError("Please enter the admin password.");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const res = await recoveryApi.verifyPassword(adminPassword, recoveryToken);
-      if (res.success && res.resetToken) {
-        setResetToken(res.resetToken);
+      const res = await recoveryApi.verifyAdmin(username.trim(), password);
+      if (res.success && res.data?.resetToken) {
+        setResetToken(res.data.resetToken);
         setStep("reset");
-        setAdminPassword("");
+        setUsername("");
+        setPassword("");
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || "Password verification failed.");
+      setError(err.response?.data?.message || "Invalid admin credentials.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  // ── Step 2: Set new PIN ─────────────────────────────────────────────────────
   const handleResetPin = async () => {
     setError("");
-    if (!newPin.trim() || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
-      setError("Please enter a valid 4-digit PIN.");
+    if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
+      setError("PIN must be exactly 4 digits.");
       return;
     }
-
+    if (newPin !== confirmPin) {
+      setError("PINs do not match.");
+      return;
+    }
     setIsLoading(true);
-    const success = await onReset(newPin);
-    setIsLoading(false);
-
-    if (success) {
-      toast.success("PIN reset successfully!", { duration: 3000 });
-      resetModal();
-    } else {
-      setError("Failed to reset PIN. Please try again.");
+    try {
+      const res = await recoveryApi.recoveryResetPin(newPin, resetToken);
+      if (res.success) {
+        setStep("success");
+        toast.success("PIN reset successfully! 🔑", { duration: 3000 });
+        setTimeout(() => {
+          resetModal();
+        }, 2000);
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to reset PIN. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const resetModal = () => {
-    setStep("question");
-    setAnswer("");
-    setAdminPassword("");
+    setStep("credentials");
+    setUsername("");
+    setPassword("");
     setNewPin("");
+    setConfirmPin("");
+    setResetToken("");
     setError("");
+    setShowPassword(false);
     onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="forgot-pin-modal-overlay" onClick={resetModal}>
-      <div className="forgot-pin-modal glass" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={resetModal}>✕</button>
+    <div className="forgot-modal-overlay" onClick={resetModal}>
+      <div className="forgot-modal glass-strong" onClick={(e) => e.stopPropagation()}>
+        <button className="forgot-modal-close" onClick={resetModal} aria-label="Close">✕</button>
 
-        {step === "question" && (
-          <div className="modal-content">
-            <h2>Recover Your PIN</h2>
-            <p className="modal-subtitle">Answer the security question to proceed.</p>
-            
-            <div className="modal-question">
-              <label>Q: Enter your database username</label>
+        {/* Step indicator */}
+        <div className="forgot-steps">
+          <div className={`forgot-step ${step !== "success" ? "active" : "done"}`}>
+            <span className="step-dot">{step === "credentials" ? "1" : "✓"}</span>
+            <span className="step-label">Verify Identity</span>
+          </div>
+          <div className="step-connector" />
+          <div className={`forgot-step ${step === "reset" ? "active" : step === "success" ? "done" : ""}`}>
+            <span className="step-dot">{step === "success" ? "✓" : "2"}</span>
+            <span className="step-label">New PIN</span>
+          </div>
+        </div>
+
+        {/* ── Step 1: Admin Credentials ─────────────────────────────────── */}
+        {step === "credentials" && (
+          <div className="forgot-step-content">
+            <div className="forgot-icon">🔐</div>
+            <h2 className="forgot-title">Recover PIN</h2>
+            <p className="forgot-subtitle">Enter admin credentials to reset the unlock PIN.</p>
+
+            <div className="forgot-field">
+              <label>Admin Username</label>
               <input
                 type="text"
-                placeholder="Your DB username"
-                value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter admin username"
                 autoComplete="off"
-                className="modal-input"
+                autoFocus
+                onKeyDown={(e) => e.key === "Enter" && handleCredentialsSubmit()}
               />
             </div>
 
-            {error && <p className="modal-error">{error}</p>}
+            <div className="forgot-field">
+              <label>Admin Password</label>
+              <div className="forgot-password-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter admin password"
+                  autoComplete="off"
+                  onKeyDown={(e) => e.key === "Enter" && handleCredentialsSubmit()}
+                />
+                <button
+                  type="button"
+                  className="btn-toggle-pw"
+                  onClick={() => setShowPassword((s) => !s)}
+                  tabIndex={-1}
+                >
+                  {showPassword ? "🙈" : "👁️"}
+                </button>
+              </div>
+            </div>
+
+            {error && <p className="forgot-error">⚠ {error}</p>}
 
             <button
-              className="modal-button glass"
-              onClick={handleAnswerSubmit}
+              className="btn-forgot-primary"
+              onClick={handleCredentialsSubmit}
               disabled={isLoading}
             >
-              Verify Answer
+              {isLoading ? (
+                <span className="btn-loading"><span className="spinner-sm" /> Verifying...</span>
+              ) : (
+                "Verify & Continue →"
+              )}
             </button>
           </div>
         )}
 
-        {step === "password" && (
-          <div className="modal-content">
-            <h2>Verify Admin Password</h2>
-            <p className="modal-subtitle">Enter the admin password to continue.</p>
-            
-            <div className="modal-question">
-              <label>Admin Password</label>
+        {/* ── Step 2: Set New PIN ───────────────────────────────────────── */}
+        {step === "reset" && (
+          <div className="forgot-step-content">
+            <div className="forgot-icon">🔑</div>
+            <h2 className="forgot-title">Set New PIN</h2>
+            <p className="forgot-subtitle">Choose a new 4-digit unlock PIN.</p>
+
+            <div className="forgot-field">
+              <label>New PIN (4 digits)</label>
               <input
                 type="password"
-                placeholder="Enter admin password"
-                value={adminPassword}
-                onChange={(e) => setAdminPassword(e.target.value)}
-                autoComplete="off"
-                className="modal-input"
+                inputMode="numeric"
+                maxLength={4}
+                value={newPin}
+                onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ""))}
+                placeholder="••••"
+                autoFocus
+                className="pin-input-large"
               />
             </div>
 
-            {error && <p className="modal-error">{error}</p>}
+            <div className="forgot-field">
+              <label>Confirm PIN</label>
+              <input
+                type="password"
+                inputMode="numeric"
+                maxLength={4}
+                value={confirmPin}
+                onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ""))}
+                placeholder="••••"
+                className="pin-input-large"
+                onKeyDown={(e) => e.key === "Enter" && handleResetPin()}
+              />
+            </div>
 
-            <div className="modal-actions">
+            {newPin.length === 4 && confirmPin.length === 4 && newPin === confirmPin && (
+              <p className="forgot-match">✓ PINs match</p>
+            )}
+
+            {error && <p className="forgot-error">⚠ {error}</p>}
+
+            <div className="forgot-actions">
               <button
-                className="modal-button glass"
-                onClick={() => {
-                  setStep("question");
-                  setError("");
-                }}
+                className="btn-forgot-secondary"
+                onClick={() => { setStep("credentials"); setError(""); }}
               >
-                Back
+                ← Back
               </button>
               <button
-                className="modal-button glass"
-                onClick={handlePasswordSubmit}
-                disabled={isLoading}
+                className="btn-forgot-primary"
+                onClick={handleResetPin}
+                disabled={isLoading || newPin.length !== 4}
               >
-                Verify Password
+                {isLoading ? (
+                  <span className="btn-loading"><span className="spinner-sm" /> Resetting...</span>
+                ) : (
+                  "Reset PIN 🔑"
+                )}
               </button>
             </div>
           </div>
         )}
 
-        {step === "reset" && (
-          <div className="modal-content">
-            <h2>Set New PIN</h2>
-            <p className="modal-subtitle">Enter your new 4-digit PIN.</p>
-            
-            <div className="modal-question">
-              <label>New PIN (4 digits)</label>
-              <input
-                type="password"
-                placeholder="0000"
-                maxLength={4}
-                value={newPin}
-                onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ""))}
-                autoComplete="off"
-                className="modal-input"
-              />
-            </div>
-
-            {error && <p className="modal-error">{error}</p>}
-
-            <div className="modal-actions">
-              <button
-                className="modal-button glass"
-                onClick={resetModal}
-              >
-                Cancel
-              </button>
-              <button
-                className="modal-button glass glow-purple"
-                onClick={handleResetPin}
-                disabled={isLoading}
-              >
-                {isLoading ? "Resetting..." : "Reset PIN"}
-              </button>
-            </div>
+        {/* ── Success ──────────────────────────────────────────────────── */}
+        {step === "success" && (
+          <div className="forgot-step-content forgot-success">
+            <div className="forgot-icon success-icon">✅</div>
+            <h2 className="forgot-title">PIN Reset!</h2>
+            <p className="forgot-subtitle">Your unlock PIN has been updated. You can now use the new PIN.</p>
           </div>
         )}
       </div>

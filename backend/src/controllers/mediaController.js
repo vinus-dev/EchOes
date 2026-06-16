@@ -1,53 +1,61 @@
 const { cloudinary } = require("../config/cloudinary");
-const { uploadMedia } = require("../middlewares/uploadMiddleware");
 
 /**
- * POST /api/v1/media/upload
- * Admin: Upload media files to Cloudinary
- * Returns array of media item objects to attach to a memory
+ * GET /api/v1/media/sign
+ * Admin: Generate a signed Cloudinary upload signature.
+ * The browser uses this to upload directly to Cloudinary (no Node buffering).
+ *
+ * Query params:
+ *   resourceType  — "image" | "video"  (default: "image")
+ *   chunkIndex    — optional, for chunked uploads
  */
-const uploadFiles = (req, res) => {
-  uploadMedia(req, res, async (err) => {
-    if (err) {
-      console.error("Upload error:", err);
-      const errMsg = err.message || "Upload failed.";
-      const isCloudinaryAuthError =
-        /Unknown API key|Invalid Signature|api key|cloudinary/i.test(errMsg);
+const generateSignature = (req, res) => {
+  try {
+    const resourceType = req.query.resourceType === "video" ? "video" : "image";
+    const folder = resourceType === "video" ? "echoes/videos" : "echoes/photos";
+    const timestamp = Math.round(Date.now() / 1000);
 
-      if (isCloudinaryAuthError) {
-        return res.status(502).json({
-          success: false,
-          message:
-            "Cloudinary authentication failed. Verify CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET in backend/.env, then restart the backend.",
-        });
-      }
+    // Parameters that must be signed (must match what browser sends)
+    const paramsToSign = {
+      folder,
+      timestamp,
+    };
 
-      return res.status(400).json({ success: false, message: errMsg });
+    // For images, add auto-quality + auto-format transformations
+    if (resourceType === "image") {
+      paramsToSign.transformation = "q_auto,f_auto";
     }
 
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ success: false, message: "No files uploaded." });
+    // For videos, add eager thumbnail + quality settings
+    if (resourceType === "video") {
+      paramsToSign.eager = "so_1,w_400,h_300,c_fill/f_jpg";
+      paramsToSign.eager_async = "true";
     }
 
-    const mediaItems = req.files.map((file, index) => {
-      const isVideo = file.mimetype.startsWith("video/");
-      return {
-        publicId: file.filename, // set by multer-storage-cloudinary
-        url: file.path,          // secure_url set by cloudinary
-        thumbnail: isVideo
-          ? file.path.replace("/upload/", "/upload/so_1,w_400,h_300,c_fill/f_jpg/")
-          : null,
-        resourceType: isVideo ? "video" : "image",
-        order: index,
-      };
-    });
+    const signature = cloudinary.utils.api_sign_request(
+      paramsToSign,
+      process.env.CLOUDINARY_API_SECRET
+    );
 
     return res.status(200).json({
       success: true,
-      message: `${mediaItems.length} file(s) uploaded successfully.`,
-      data: mediaItems,
+      data: {
+        signature,
+        timestamp,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        folder,
+        resourceType,
+        // Echo back the signed params so the browser knows exactly what to send
+        transformation: resourceType === "image" ? "q_auto,f_auto" : undefined,
+        eager: resourceType === "video" ? "so_1,w_400,h_300,c_fill/f_jpg" : undefined,
+        eager_async: resourceType === "video" ? "true" : undefined,
+      },
     });
-  });
+  } catch (error) {
+    console.error("generateSignature error:", error);
+    return res.status(500).json({ success: false, message: "Failed to generate upload signature." });
+  }
 };
 
 /**
@@ -59,7 +67,6 @@ const deleteFile = async (req, res) => {
     const { publicId } = req.params;
     const { resourceType = "image" } = req.query;
 
-    // publicId may contain slashes (e.g. echoes/photos/abc123)
     const decodedId = decodeURIComponent(publicId);
 
     const result = await cloudinary.uploader.destroy(decodedId, {
@@ -77,4 +84,4 @@ const deleteFile = async (req, res) => {
   }
 };
 
-module.exports = { uploadFiles, deleteFile };
+module.exports = { generateSignature, deleteFile };

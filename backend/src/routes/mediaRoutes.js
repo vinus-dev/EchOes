@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { uploadFiles, deleteFile } = require("../controllers/mediaController");
+const { generateSignature, deleteFile } = require("../controllers/mediaController");
 const { verifyAdminToken } = require("../middlewares/authMiddleware");
 
-// Admin only — upload and delete media
-router.post("/upload", verifyAdminToken, uploadFiles);
+// Admin only — generate upload signature (browser uploads directly to Cloudinary)
+router.get("/sign", verifyAdminToken, generateSignature);
+
+// Admin only — delete media from Cloudinary
 router.delete("/:publicId", verifyAdminToken, deleteFile);
 
 module.exports = router;

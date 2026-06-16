@@ -184,8 +184,92 @@
     width: 100%;
   }
 
-  .btn-back-home {
-    order: -1;
-    text-align: center;
-  }
+/* ── New: Badge, password toggle, forgot link, recovery success ───────────── */
+
+.admin-login-badge {
+  text-align: center;
+  font-size: 1.4rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.6));
+}
+
+.admin-pw-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.admin-pw-wrapper input {
+  padding-right: 2.8rem !important;
+  width: 100%;
+}
+
+.btn-admin-toggle-pw {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--gray-400);
+  transition: opacity 0.2s;
+  padding: 0;
+}
+
+.btn-admin-toggle-pw:hover { opacity: 0.8; }
+
+.btn-forgot-admin-creds {
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--purple-400, #a78bfa);
+  margin-top: calc(-1 * var(--sp-2));
+  transition: color 0.2s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.btn-forgot-admin-creds:hover { color: var(--purple-300, #c4b5fd); }
+
+.admin-recovery-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+  text-align: center;
+  padding: var(--sp-4) 0;
+}
+
+.recovery-success-icon {
+  font-size: 3rem;
+  filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.5));
+}
+
+.recovery-username {
+  color: var(--purple-300, #c4b5fd);
+  font-family: monospace;
+  font-size: 1rem;
+}
+
+.btn-admin-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.spinner-sm-admin {
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: adminSpin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes adminSpin {
+  to { transform: rotate(360deg); }
 }

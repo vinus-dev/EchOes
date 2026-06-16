@@ -9,6 +9,7 @@ interface UploadFormProps {
   uploadMedia: (files: File[]) => Promise<MediaItem[]>;
   isUploading: boolean;
   uploadProgress: number;
+  fileProgresses: Record<number, number>;
   deleteMedia: (publicId: string, resourceType: "image" | "video") => Promise<void>;
 }
 
@@ -19,6 +20,7 @@ export default function UploadForm({
   uploadMedia,
   isUploading,
   uploadProgress,
+  fileProgresses,
   deleteMedia,
 }: UploadFormProps) {
   const [code, setCode] = useState("");
@@ -30,6 +32,7 @@ export default function UploadForm({
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadingFiles, setUploadingFiles] = useState<File[]>([]);
 
   useEffect(() => {
     if (memory) {
@@ -57,17 +60,22 @@ export default function UploadForm({
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
 
-    const uploaded = await uploadMedia(files);
-    if (uploaded.length > 0) {
-      // Append and set correct ordering
-      setMediaItems((prev) => {
-        const nextOrder = prev.length;
-        const newItems = uploaded.map((item, idx) => ({
-          ...item,
-          order: nextOrder + idx,
-        }));
-        return [...prev, ...newItems];
-      });
+    setUploadingFiles(files);
+    try {
+      const uploaded = await uploadMedia(files);
+      if (uploaded.length > 0) {
+        // Append and set correct ordering
+        setMediaItems((prev) => {
+          const nextOrder = prev.length;
+          const newItems = uploaded.map((item, idx) => ({
+            ...item,
+            order: nextOrder + idx,
+          }));
+          return [...prev, ...newItems];
+        });
+      }
+    } finally {
+      setUploadingFiles([]);
     }
   };
 
@@ -240,18 +248,37 @@ export default function UploadForm({
                 disabled={isUploading}
                 id="file-input"
               />
-              <label htmlFor="file-input" className="file-dropzone-label">
-                {isUploading ? (
-                  <div className="upload-progress-wrapper">
-                    <span>Uploading files... {uploadProgress}%</span>
-                    <div className="upload-progress-bar">
-                      <div className="progress-fill" style={{ width: `${uploadProgress}%` }} />
-                    </div>
-                  </div>
-                ) : (
+              {!isUploading ? (
+                <label htmlFor="file-input" className="file-dropzone-label">
                   <span>Click to select photos or videos to upload</span>
-                )}
-              </label>
+                </label>
+              ) : (
+                <div className="uploading-files-container">
+                  <div className="upload-header-row">
+                    <span className="upload-status-text">Uploading {uploadingFiles.length} file(s)...</span>
+                    <span className="upload-total-pct">{uploadProgress}%</span>
+                  </div>
+                  <div className="overall-progress-bar">
+                    <div className="progress-fill" style={{ width: `${uploadProgress}%` }} />
+                  </div>
+                  <div className="individual-files-list">
+                    {uploadingFiles.map((file, idx) => {
+                      const pct = fileProgresses[idx] ?? 0;
+                      return (
+                        <div key={idx} className="individual-file-row">
+                          <span className="file-name">{file.name}</span>
+                          <div className="file-progress-bar-wrapper">
+                            <div className="file-progress-bar">
+                              <div className="file-progress-fill" style={{ width: `${pct}%` }} />
+                            </div>
+                            <span className="file-progress-pct">{pct}%</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
             {mediaItems.length > 0 && (

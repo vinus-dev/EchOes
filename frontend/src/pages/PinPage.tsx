@@ -8,7 +8,7 @@ import "./PinPage.css";
 
 export default function PinPage() {
   const navigate = useNavigate();
-  const { verifyPin, isPinUnlocked, isVerifying, resetPin } = useAuth();
+  const { verifyPin, isPinUnlocked, isVerifying } = useAuth();
   const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
 
   useEffect(() => {
@@ -24,16 +24,6 @@ export default function PinPage() {
       return true;
     }
     return false;
-  };
-
-  const handleResetPin = async (newPin: string): Promise<boolean> => {
-    try {
-      const success = await resetPin(newPin);
-      return success;
-    } catch (error) {
-      console.error("Error resetting PIN:", error);
-      return false;
-    }
   };
 
   return (
@@ -60,7 +50,6 @@ export default function PinPage() {
       <ForgotPinModal
         isOpen={isForgotModalOpen}
         onClose={() => setIsForgotModalOpen(false)}
-        onReset={handleResetPin}
       />
     </div>
   );

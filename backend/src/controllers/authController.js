@@ -70,21 +70,32 @@ const adminLogin = async (req, res) => {
 
 /**
  * PUT /api/v1/auth/admin/reset-pin
- * Reset the app PIN (admin only)
+ * Reset the app PIN (admin only) — requires current PIN for authentication.
  */
 const resetPin = async (req, res) => {
   try {
-    const { newPin } = req.body;
+    const { newPin, currentPin } = req.body;
+
+    if (!currentPin) {
+      return res.status(400).json({ success: false, message: "Current PIN is required." });
+    }
 
     if (!newPin || String(newPin).length < 4) {
-      return res.status(400).json({ success: false, message: "PIN must be at least 4 digits." });
+      return res.status(400).json({ success: false, message: "New PIN must be at least 4 digits." });
     }
 
     const config = await AppConfig.getConfig();
+
+    // Verify the current PIN before allowing reset
+    const isCurrentValid = await config.verifyPin(String(currentPin));
+    if (!isCurrentValid) {
+      return res.status(401).json({ success: false, message: "Current PIN is incorrect." });
+    }
+
     config.pinHash = await bcrypt.hash(String(newPin), 12);
     await config.save();
 
-    return res.status(200).json({ success: true, message: "PIN reset successfully." });
+    return res.status(200).json({ success: true, message: "PIN updated successfully." });
   } catch (error) {
     console.error("resetPin error:", error);
     return res.status(500).json({ success: false, message: "Server error." });

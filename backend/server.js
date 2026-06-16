@@ -35,8 +35,8 @@ app.use(
   })
 );
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(express.json({ limit: "100mb" }));
+app.use(express.urlencoded({ extended: true, limit: "100mb" }));
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
 app.get("/api/v1/health", (req, res) => {
@@ -69,8 +69,13 @@ app.use((err, req, res, next) => {
 });
 
 // ─── Start Server ─────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`\n🎵 EchOes API running on http://localhost:${PORT}`);
   console.log(`📡 Environment: ${process.env.NODE_ENV || "development"}`);
   console.log(`❤️  Health: http://localhost:${PORT}/api/v1/health\n`);
 });
+
+// Allow long-running connections (direct Cloudinary uploads, large file transfers)
+server.keepAliveTimeout = 600000;   // 10 minutes
+server.requestTimeout = 600000;   // 10 minutes
+server.headersTimeout = 610000;   // slightly above requestTimeout

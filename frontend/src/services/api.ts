@@ -310,7 +310,7 @@ export const mediaApi = {
     for (let i = 0; i < images.length; i += 3) {
       const batch = images.slice(i, i + 3);
       const batchResults = await Promise.all(
-        batch.map((img, _bIdx) => uploadImage(img, files.indexOf(img)))
+        batch.map((img, bIdx) => uploadImage(img, files.indexOf(img)))
       );
       imageChunks.push(...batchResults.map((r) => Promise.resolve(r)));
     }
@@ -326,7 +326,7 @@ export const mediaApi = {
     }
 
     // Restore order to match original file order
-    const _ordered = files.map((f) => {
+    const ordered = files.map((f) => {
       if (f.type.startsWith("image/")) {
         return results.find((r) => r.resourceType === "image" && results.indexOf(r) < images.length);
       }
